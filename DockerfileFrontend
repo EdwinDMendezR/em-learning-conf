@@ -1,0 +1,23 @@
+FROM node:14 AS build
+WORKDIR /app
+#RUN apt-get update && apt-get install -y git
+RUN git clone https://github.com/EMENDEZ93/em-learning-frontend.git
+WORKDIR /app/em-learning-frontend
+RUN git checkout master
+RUN npm install popper.js --save
+RUN npm install @popperjs/core --save
+RUN npm install firebase --save
+RUN npm install @angular/fire --save
+RUN npm install
+RUN npm run build --prod
+#RUN HOST_IP=$(ifconfig | grep 'inet ' | grep -v '127.0.0.1' | awk '{print $2}' | tail -n 1)
+#ENV HOST_IP2 ${UID}
+#RUN echo $HOST_IP2 ${UID}
+
+
+#FROM nginx:alpine
+FROM nginx
+COPY --from=build /app/em-learning-frontend/public /usr/share/nginx/html
+EXPOSE 80
+RUN echo env
+CMD ["nginx", "-g", "daemon off;"]
